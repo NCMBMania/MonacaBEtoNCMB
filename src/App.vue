@@ -192,7 +192,9 @@ export default Vue.extend({
     async importInstallation() {
       // @ts-ignore
       for (const row of this.installations) {
+        // @ts-ignore
         if (this.pushType && row.pushType === 'debug') continue;
+        // @ts-ignore
         if (!this.pushType && row.pushType === 'release') continue;
         for (const field of ['createDate', 'updateDate']) {
           row[`${field}_Monaca`] = row[field]
