@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-
+// @ts-ignore
 const fileRead = (file) => {
   return new Promise((res, rej) => {
     try {
@@ -41,11 +41,13 @@ export default Vue.extend({
     dragLeave() {
       this.isEnter = false;
     },
+    // @ts-ignore
     async dropFile(e) {
       const files = e.dataTransfer.files
       const params = {}
       for (const f of files) {
         const res = await fileRead(f)
+        // @ts-ignore
         params[f.name.replace(/\.json$/, '')] = JSON.parse(res.target.result).results
       }
       this.$emit('success', params)

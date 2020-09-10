@@ -118,7 +118,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
+// @ts-ignore
 import Dropfile from './components/Dropfile'
+// @ts-ignore
 import { NCMB, NCMBObject, NCMBInstallation, NCMBQuery } from 'ncmb_ts'
 
 export default Vue.extend({
@@ -127,18 +129,18 @@ export default Vue.extend({
     Dropfile
   },
   data: () => ({
-    applicationKey: 'a137aca9263b3bcaf430dfcc224302a6d39036f3c75cd9594bfe40ef35231e86', //null,
-    clientKey: '1b81e1f907e7ddda696777e6ae182028a15cb15e662521c204c5238733c77495', //null,
-    applicationKeyErrors: null,
-    clientKeyErrors: null,
+    applicationKey: '',
+    clientKey: '',
+    applicationKeyErrors: '',
+    clientKeyErrors: '',
     files: {},
     installations: [],
-    pushType: false,
-    message: null,
-    ncmb: null
+    pushType: Boolean,
+    message: {type: String},
+    ncmb: {type: NCMB}
   }),
   methods: {
-    success(contents) {
+    success(contents: { [s: string]: any }[]) {
       for (const key in contents) {
         this.$set(this.files, key, contents[key])
       }
@@ -146,7 +148,7 @@ export default Vue.extend({
     deleteFile(fileName: string) {
       this.$delete(this.files, fileName);
     },
-    successInstallation(contents) {
+    successInstallation(contents: { [s: string]: any }) {
       const first = Object.keys(contents)[0];
       this.$set(this, 'installations', contents[first])
     },
@@ -154,43 +156,57 @@ export default Vue.extend({
       this.$set(this, 'installations', [])
     },
     async upload() {
+      // @ts-ignore
       this.log('アップロード処理を開始します')
       try {
+        // @ts-ignore
         this.ncmb = new NCMB(this.applicationKey, this.clientKey);
         // コネクションチェック
         const query = new NCMBQuery('Hello');
         await query.limit(1).fetch();
         // データストアのアップロード
         for (const className in this.files) {
+          // @ts-ignore
           this.log(`${className}にデータを追加します`)
+          // @ts-ignore
           await this.import(className, this.files[className])
+          // @ts-ignore
           this.log(`${className}へのデータ追加完了しました`)
         }
         // デバイストークンのアップロード
         if (this.installations.length > 0) {
+          // @ts-ignore
           this.log(`デバイストークンをInstallationsに登録します`)
+          // @ts-ignore
           this.log(`処理対象のデータは${this.pushType ? '本番用' : '開発用'}のデバイストークンです`);
+          // @ts-ignore
           await this.importInstallation()
         }
       } catch (err) {
-        console.log(err);
-        this.log(err.message)
+        // @ts-ignore
+        this.log(JSON.stringify(err.message))
+        // @ts-ignore
         this.log('エラーが発生しました')
       }
     },
     async importInstallation() {
+      // @ts-ignore
       for (const row of this.installations) {
+        if (this.pushType && row.pushType === 'debug') continue;
+        if (!this.pushType && row.pushType === 'release') continue;
         for (const field of ['createDate', 'updateDate']) {
           row[`${field}_Monaca`] = row[field]
           delete row[field]
         }
         const install = new NCMBInstallation;
         await install.sets(row).save();
+        // @ts-ignore
         this.log(`デバイストークン追加完了。Installations - objectId ${install.get('objectId')}`)
       }
     },
 
-    async import(className, rows) {
+    async import(className: string, rows: { [s: string]: any }) {
+      // @ts-ignore
       for (const row of rows) {
         const obj = new NCMBObject(className)
         for (const field of ['createDate', 'updateDate']) {
@@ -198,15 +214,18 @@ export default Vue.extend({
           delete row[field]
         }
         await obj.sets(row).save()
+        // @ts-ignore
         this.log(`データ追加完了。${className} - objectId ${obj.get('objectId')}`)
       }
     },
-    log(message) {
+    log(message: string) {
+      // @ts-ignore
       this.message = `${message}<br />${this.message === null ? '': this.message }`;
     }
   },
   computed: {
     pushMessage() {
+      // @ts-ignore
       return this.pushType === false ? '開発用デバイストークンを取り込む' : '本番運用のデバイストークンを取り込む'
     }
   }
