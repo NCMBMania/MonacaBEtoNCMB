@@ -48,7 +48,7 @@ export default Vue.extend({
       for (const f of files) {
         const res = await fileRead(f)
         // @ts-ignore
-        params[f.name.replace(/\.json$/, '')] = JSON.parse(res.target.result).results
+        params[f.name.replace(/\.json$/, '').replace('collection_', '')] = JSON.parse(res.target.result).results
       }
       this.$emit('success', params)
       this.isEnter = false

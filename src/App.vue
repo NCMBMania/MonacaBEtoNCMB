@@ -31,7 +31,8 @@
                     label="クライアントキー"
                     required
                   ></v-text-field>
-                  <h3>データストアへのアップロードファイル</h3>
+                  <h3>データストアへのアップロードファイル(コレクションをエクスポート、Zipファイルを伸張した中身のファイルをD&amp;Dしてください）
+                  </h3>
                   <Dropfile @success="success">
                     ファイルアップロード
                   </Dropfile>
@@ -59,7 +60,7 @@
                       </v-list-item>
                     </v-list>
                   </div>
-                  <h3>デバイストークンのアップロードファイル</h3>
+                  <h3>デバイストークンのアップロードファイル（プッシュ通知のエクスポートしたファイルをドラッグ&amp;ドロップしてください。圧縮されている場合は伸張してください）</h3>
                   <Dropfile @success="successInstallation">
                     ファイルアップロード
                   </Dropfile>
